@@ -78,6 +78,7 @@ jobs:
           model: gpt-4o-mini
           system-prompt: You write terse release notes.
           prompt: ${{ steps.prompt.outputs.prompt }}
+          token: ${{ secrets.IRIS_AI_MODEL_SECRETS }}
 
       - name: Write changelog file
         id: notes
