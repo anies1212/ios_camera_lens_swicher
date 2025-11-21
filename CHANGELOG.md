@@ -1,3 +1,11 @@
+## 1.0.1
+
+- Improved overall formatting and output
+- Enhanced GitHub workflows for better performance
+- Fixed issues with AI model prompt and secret management
+- Corrected context collection processes
+- Removed unnecessary workflow steps
+
 ## 0.0.1
 
 - Initial release of `iris_camera` (previously `ios_camera_lens_switcher`):
