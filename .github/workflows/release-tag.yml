@@ -1,126 +1,58 @@
-name: release-tag
+name: release-merged
 
 on:
-  push:
+  pull_request:
+    types:
+      - closed
     branches:
       - main
 
 jobs:
   tag-and-release:
+    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'release/')
     runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: read
-
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # 5.0.1
         with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
           fetch-depth: 0
 
-      - name: Detect release version from merged PR
-        id: detect
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@e51d8e571e22473a2ddebf0ef8a2123f0ab2c02c # v1.7.1
+
+      - name: Resolve version from pubspec via cider
+        id: version
         run: |
-          set -euo pipefail
-          commit_msg="$(git show -s --pretty=%B HEAD)"
-
-          pr_number=$(printf '%s\n' "$commit_msg" | sed -n 's/.*#\([0-9][0-9]*\).*/\1/p' | head -n 1 || true)
-          if [[ -z "$pr_number" ]]; then
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-            echo "No PR number detected in merge commit; skipping."
-            exit 0
+          dart pub global activate cider
+          version=$(dart pub global run cider version | tr -d '[:space:]')
+          if [[ -z "$version" ]]; then
+            echo "Failed to read version from pubspec.yaml" >&2
+            exit 1
           fi
-
-          head_ref=$(gh pr view "$pr_number" --json headRefName --template '{{.headRefName}}')
-          if [[ ! "$head_ref" =~ ^release/(.+)$ ]]; then
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-            echo "PR head ref $head_ref is not a release/* branch; skipping."
-            exit 0
-          fi
-
-          version="${BASH_REMATCH[1]}"
-          echo "skip=false" >> "$GITHUB_OUTPUT"
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "tag=v$version" >> "$GITHUB_OUTPUT"
 
-      - name: Generate release notes with AI
+      - name: Build changelog
         id: changelog
-        if: steps.detect.outputs.skip == 'false'
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          set -euo pipefail
-          version="${{ steps.detect.outputs.version }}"
-
           git fetch --tags
           previous_tag=$(git describe --tags --abbrev=0 --match "v*" 2>/dev/null || true)
-
-          if [[ -n "$previous_tag" ]]; then
-            range="$previous_tag..HEAD"
-          else
-            range=""
-          fi
-
-          git log --no-merges --pretty='- %s (%h)' ${range:+$range} > commits.txt
-
-          note_file="release_notes.md"
-
-          if [[ -n "$OPENAI_API_KEY" ]]; then
-          cat > prompt.txt <<'EOF'
-          You are a release note assistant. Summarize the changes into a concise changelog with bullet points and short section titles if relevant. Keep it brief and focused on user-visible changes. Use English.
-          EOF
-            echo "" >> prompt.txt
-            echo "Version: $version" >> prompt.txt
-            if [[ -n "$previous_tag" ]]; then
-              echo "Previous tag: $previous_tag" >> prompt.txt
-            fi
-            echo "Commits:" >> prompt.txt
-            cat commits.txt >> prompt.txt
-
-            prompt=$(cat prompt.txt)
-            payload=$(jq -n --arg prompt "$prompt" '{model:"gpt-4o-mini",messages:[{role:"system",content:"You write terse changelog entries."},{role:"user",content:$prompt}],temperature:0.35}')
-            response=$(curl -sS https://api.openai.com/v1/chat/completions \
-              -H "Content-Type: application/json" \
-              -H "Authorization: Bearer $OPENAI_API_KEY" \
-              -d "$payload")
-
-            echo "$response" | jq -r '.choices[0].message.content' > "$note_file"
-          else
-            if [[ -s commits.txt ]]; then
-              echo "Release $version" > "$note_file"
-              echo "" >> "$note_file"
-              cat commits.txt >> "$note_file"
-            else
-              echo "Release $version" > "$note_file"
-              echo "" >> "$note_file"
-              echo "- No commit details available." >> "$note_file"
-            fi
-          fi
-
-          echo "note-file=$note_file" >> "$GITHUB_OUTPUT"
+          range="${previous_tag:+$previous_tag..HEAD}"
+          git log --no-merges --pretty='- %s (%h)' ${range:+$range} > release_notes.md
+          echo "note-file=release_notes.md" >> "$GITHUB_OUTPUT"
           echo "previous-tag=$previous_tag" >> "$GITHUB_OUTPUT"
 
-      - name: Create tag and GitHub release
-        if: steps.detect.outputs.skip == 'false'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -euo pipefail
-          tag="${{ steps.detect.outputs.tag }}"
-          notes="${{ steps.changelog.outputs.note-file }}"
+      - name: Create tag
+        uses: mathieudutour/github-tag-action@a22cf08638b34d5badda920f9daf6e72c477b07b # v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          custom_tag: ${{ steps.version.outputs.tag }}
 
-          if git rev-parse "$tag" >/dev/null 2>&1; then
-            echo "Tag $tag already exists; skipping creation."
-            exit 0
-          fi
-
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          git tag -a "$tag" -m "Release $tag"
-          git push origin "$tag"
-
-          gh release create "$tag" \
-            --title "$tag" \
-            --notes-file "$notes"
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@5be0e66d93ac7ed76da52eca8bb058f665c3a5fe # v2.4.2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          body_path: ${{ steps.changelog.outputs.note-file }}

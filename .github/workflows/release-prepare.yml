@@ -24,7 +24,6 @@ jobs:
       - name: Validate version input
         id: version
         run: |
-          set -euo pipefail
           VERSION="${{ inputs.version }}"
           if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.-]+)?$ ]]; then
             echo "Version must follow semver (e.g. 1.2.3 or 1.2.3-rc.1)" >&2
@@ -34,23 +33,82 @@ jobs:
 
       - name: Update pubspec version
         run: |
-          set -euo pipefail
           version="${{ steps.version.outputs.value }}"
+          perl -0pi -e "s/^version:\s*.*/version: $version/m" pubspec.yaml
 
-          # Use multiline mode so the version line is replaced even when not on the first line.
-          perl -0pi -e "s/^version:\\s*.*/version: $version/m" pubspec.yaml
+      - name: Collect release context
+        id: context
+        run: |
+          git fetch --tags
+          prev_tag=$(git describe --tags --abbrev=0 --match "v*" 2>/dev/null || true)
+          range="${prev_tag:+$prev_tag..HEAD}"
+          commits=$(git log --no-merges --pretty='- %s (%h)' ${range:+$range})
+
+          echo "prev-tag=$prev_tag" >> "$GITHUB_OUTPUT"
+          echo "commits<<'EOF'" >> "$GITHUB_OUTPUT"
+          printf '%s\n' "$commits" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Build changelog prompt
+        id: prompt
+        run: |
+          version="${{ steps.version.outputs.value }}"
+          prev_tag="${{ steps.context.outputs.prev-tag }}"
+          commits="${{ steps.context.outputs.commits }}"
+
+          {
+            cat .github/prompts/release_changelog_prompt.txt
+            echo ""
+            echo "Version: $version"
+            if [[ -n "$prev_tag" ]]; then
+              echo "Previous tag: $prev_tag"
+            fi
+            echo "Commits:"
+            printf '%s\n' "$commits"
+          } > prompt.txt
+
+          prompt_json=$(jq -Rs . < prompt.txt)
+          echo "prompt=$prompt_json" >> "$GITHUB_OUTPUT"
+
+      - name: Generate changelog with GitHub Models
+        id: changelog
+        uses: actions/ai-inference@a1c11829223a786afe3b5663db904a3aa1eac3a2 # v2.0.1
+        with:
+          model: gpt-4o-mini
+          messages: |
+            [
+              {"role":"system","content":"You write terse release notes."},
+              {"role":"user","content":${{ steps.prompt.outputs.prompt }}}
+            ]
+
+      - name: Write changelog file
+        id: notes
+        run: |
+          content="${{ steps.changelog.outputs.choices_0_message_content }}"
+          if [[ -z "$content" || "$content" == "null" ]]; then
+            echo "AI generation empty; falling back to commit list" >&2
+            content="Release ${{ steps.version.outputs.value }}\n\n${{ steps.context.outputs.commits }}"
+          fi
+
+          printf '%s\n' "$content" > CHANGELOG.md
+          {
+            echo "Prepare release ${{ steps.version.outputs.value }}."
+            echo ""
+            echo "- Bump package version in pubspec.yaml."
+            echo ""
+            echo "Changelog:"
+            echo ""
+            cat CHANGELOG.md
+          } > release_pr_body.md
+
+          echo "body-path=release_pr_body.md" >> "$GITHUB_OUTPUT"
 
       - name: Create release branch pull request
         uses: peter-evans/create-pull-request@6d6857d36972b65feb161a90e484f2984215f83e # v6.1.0
         with:
-          # Use PAT with repo scope; GitHub blocks GITHUB_TOKEN from creating PRs when the setting is disabled.
           token: ${{ secrets.IRIS_APP_SECRETS }}
           branch: release/${{ steps.version.outputs.value }}
           delete-branch: false
           commit-message: "chore: prepare release ${{ steps.version.outputs.value }}"
-          title: "Release ${{
-            steps.version.outputs.value }}"
-          body: |
-            Prepare release ${{ steps.version.outputs.value }}.
-
-            - Bump package version in pubspec.yaml.
+          title: "Release ${{ steps.version.outputs.value }}"
+          body-path: ${{ steps.notes.outputs.body-path }}

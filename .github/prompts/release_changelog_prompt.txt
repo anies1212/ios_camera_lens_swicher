@@ -1,0 +1,5 @@
+Write a concise changelog for this Flutter plugin release.
+- Be brief and user-focused.
+- Prefer bullet points; group items if it helps readability.
+- Highlight behavior changes, new features, and fixes.
+- Keep formatting in Markdown.
