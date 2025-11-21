@@ -1,0 +1,56 @@
+name: publish-to-pub
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  publish:
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v4.1.5
+        with:
+          fetch-depth: 0
+
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@e51d8e571e22473a2ddebf0ef8a2123f0ab2c02c # v1.7.1
+
+      - name: Verify tag matches pubspec version
+        id: version
+        run: |
+          tag="${GITHUB_REF#refs/tags/}"
+          tag="${tag#v}"
+          version_line=$(grep -E '^version:' pubspec.yaml || true)
+          version=${version_line#version: }
+          if [[ -z "$version" ]]; then
+            echo "Failed to read version from pubspec.yaml" >&2
+            exit 1
+          fi
+          if [[ "$version" != "$tag" ]]; then
+            echo "Tag version ($tag) does not match pubspec.yaml ($version)" >&2
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Configure pub credentials
+        env:
+          PUB_CREDENTIALS: ${{ secrets.PUB_CREDENTIALS }}
+        run: |
+          if [[ -z "$PUB_CREDENTIALS" ]]; then
+            echo "PUB_CREDENTIALS secret is required to publish." >&2
+            exit 1
+          fi
+          mkdir -p "$HOME/.config/dart"
+          printf '%s' "$PUB_CREDENTIALS" > "$HOME/.config/dart/pub-credentials.json"
+          chmod 600 "$HOME/.config/dart/pub-credentials.json"
+
+      - name: Dry run publish
+        run: dart pub publish --dry-run
+
+      - name: Publish package
+        run: dart pub publish --force
