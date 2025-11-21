@@ -99,10 +99,12 @@ jobs:
           new_section=$(printf '%s\n\n%s\n\n' "$header" "$content")
 
           if [[ -f CHANGELOG.md ]]; then
+            cp CHANGELOG.md CHANGELOG.prev
             {
               printf '%s\n' "$new_section"
-              cat CHANGELOG.md
+              cat CHANGELOG.prev
             } > CHANGELOG.md
+            rm -f CHANGELOG.prev
           else
             printf '%s\n' "$new_section" > CHANGELOG.md
           fi
