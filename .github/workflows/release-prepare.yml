@@ -89,7 +89,8 @@ jobs:
             content="Release ${{ steps.version.outputs.value }}\n\n${{ steps.context.outputs.commits }}"
           fi
 
-          printf '%s\n' "$content" > CHANGELOG.md
+          header="### ${{ steps.version.outputs.value }}"
+          printf '%s\n\n%s\n' "$header" "$content" > CHANGELOG.md
           {
             echo "Prepare release ${{ steps.version.outputs.value }}."
             echo ""
@@ -109,5 +110,8 @@ jobs:
           branch: release/${{ steps.version.outputs.value }}
           delete-branch: false
           commit-message: "chore: prepare release ${{ steps.version.outputs.value }}"
-          title: "Release ${{ steps.version.outputs.value }}"
+          title: "release: bump up app version to ${{ steps.version.outputs.value }}"
           body-path: ${{ steps.notes.outputs.body-path }}
+          add-paths: |
+            pubspec.yaml
+            CHANGELOG.md
