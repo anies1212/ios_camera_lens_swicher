@@ -83,24 +83,28 @@ jobs:
       - name: Write changelog file
         id: notes
         run: |
-          content="${{ steps.changelog.outputs.choices_0_message_content }}"
+          content="${{ steps.changelog.outputs.response }}"
+          if [[ -z "$content" || "$content" == "null" ]]; then
+            content="${{ steps.changelog.outputs.result }}"
+          fi
+          if [[ -z "$content" || "$content" == "null" ]]; then
+            content="${{ steps.changelog.outputs.choices_0_message_content }}"
+          fi
           if [[ -z "$content" || "$content" == "null" ]]; then
             echo "AI generation empty; falling back to commit list" >&2
             content=$(printf '%s\n' "${{ steps.context.outputs.commits }}")
           fi
 
-          header="### ${{ steps.version.outputs.value }}"
+          header="## ${{ steps.version.outputs.value }}"
           new_section=$(printf '%s\n\n%s\n\n' "$header" "$content")
 
           if [[ -f CHANGELOG.md ]]; then
-            cp CHANGELOG.md CHANGELOG.prev
             {
-              printf '%s' "$new_section"
-              cat CHANGELOG.prev
+              printf '%s\n' "$new_section"
+              cat CHANGELOG.md
             } > CHANGELOG.md
-            rm -f CHANGELOG.prev
           else
-            printf '%s' "$new_section" > CHANGELOG.md
+            printf '%s\n' "$new_section" > CHANGELOG.md
           fi
           {
             echo "Prepare release ${{ steps.version.outputs.value }}."
