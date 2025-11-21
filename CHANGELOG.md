@@ -7,6 +7,7 @@
 - Removed unnecessary workflow steps
 
 ## 1.0.0
+
 - Added per-lens focus capability flags to avoid unsupported focus calls on some devices.
 - Improved example app UI by modularizing widgets and guarding focus/zoom controls per lens.
 - Added CI workflows for release tagging and pub publishing to streamline releases.
