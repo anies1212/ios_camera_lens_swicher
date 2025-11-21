@@ -35,23 +35,31 @@ class IrisCameraPreview extends StatefulWidget {
 
   /// Optional aspect ratio for the preview container.
   final double? aspectRatio;
+
   /// Optional border radius for clipping the preview.
   final BorderRadius? borderRadius;
+
   /// Background shown behind the native view.
   final Color backgroundColor;
   final Clip clipBehavior;
   final PlatformViewHitTestBehavior hitTestBehavior;
+
   /// Placeholder displayed on non-iOS platforms.
   final Widget? placeholder;
   final PlatformViewCreatedCallback? onViewCreated;
+
   /// Whether to render the focus indicator overlay.
   final bool showFocusIndicator;
+
   /// Style applied to the focus indicator overlay.
   final FocusIndicatorStyle focusIndicatorStyle;
+
   /// Optional external controller for the indicator.
   final FocusIndicatorController? focusIndicatorController;
+
   /// Enables tap-to-focus gesture detection.
   final bool enableTapToFocus;
+
   /// Callback invoked when the preview is tapped (normalized coordinates).
   final TapToFocusCallback? onTapFocus;
 
