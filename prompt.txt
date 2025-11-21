@@ -1,0 +1,16 @@
+Write a concise changelog for this Flutter plugin release.
+- Be brief and user-focused.
+- Prefer bullet points; group items if it helps readability.
+- Highlight behavior changes, new features, and fixes.
+- Keep formatting in Markdown.
+
+Version: 1.0.2
+Previous tag: v1.0.0
+Commits:
+- fix: impl ai model secrets (29071ea)
+- fix: workflow promt (ea61c35)
+- fix: collect conetext (69ede28)
+- fix: workflows (aec3b45)
+- fix: delete eunsure step (540b69f)
+- fix: secret usage (1ce03ca)
+- fix: workflows (c9f5415)
