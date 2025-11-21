@@ -43,7 +43,11 @@ jobs:
       - name: Create release branch pull request
         uses: peter-evans/create-pull-request@6d6857d36972b65feb161a90e484f2984215f83e # v6.1.0
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          # GitHub restricts GITHUB_TOKEN from opening PRs unless
+          # "Allow GitHub Actions to create and approve pull requests" is enabled.
+          # Provide a classic PAT with repo scope via RELEASE_PR_TOKEN or enable the setting.
+          # Prefer PAT with PR permissions (IRIS_APP_SECRETS), fallback to RELEASE_PR_TOKEN or GITHUB_TOKEN.
+          token: ${{ secrets.IRIS_APP_SECRETS != '' && secrets.IRIS_APP_SECRETS || secrets.RELEASE_PR_TOKEN != '' && secrets.RELEASE_PR_TOKEN || secrets.GITHUB_TOKEN }}
           branch: release/${{ steps.version.outputs.value }}
           delete-branch: false
           commit-message: "chore: prepare release ${{ steps.version.outputs.value }}"
