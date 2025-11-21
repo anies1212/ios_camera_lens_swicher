@@ -86,11 +86,22 @@ jobs:
           content="${{ steps.changelog.outputs.choices_0_message_content }}"
           if [[ -z "$content" || "$content" == "null" ]]; then
             echo "AI generation empty; falling back to commit list" >&2
-            content="Release ${{ steps.version.outputs.value }}\n\n${{ steps.context.outputs.commits }}"
+            content=$(printf '%s\n' "${{ steps.context.outputs.commits }}")
           fi
 
           header="### ${{ steps.version.outputs.value }}"
-          printf '%s\n\n%s\n' "$header" "$content" > CHANGELOG.md
+          new_section=$(printf '%s\n\n%s\n\n' "$header" "$content")
+
+          if [[ -f CHANGELOG.md ]]; then
+            cp CHANGELOG.md CHANGELOG.prev
+            {
+              printf '%s' "$new_section"
+              cat CHANGELOG.prev
+            } > CHANGELOG.md
+            rm -f CHANGELOG.prev
+          else
+            printf '%s' "$new_section" > CHANGELOG.md
+          fi
           {
             echo "Prepare release ${{ steps.version.outputs.value }}."
             echo ""
