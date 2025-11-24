@@ -50,3 +50,7 @@ jobs:
       - name: Build plugin for iOS simulator
         working-directory: example
         run: flutter build ios --simulator --no-codesign
+
+      - name: Run Swift package tests
+        working-directory: ios
+        run: swift test --enable-test-discovery

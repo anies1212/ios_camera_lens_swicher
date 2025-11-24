@@ -25,7 +25,7 @@ iOS-first camera toolkit for Flutter. `iris_camera` exposes live preview widgets
 - ⏱️ **Frame rate tuning** – set min/max FPS for the active format when supported.
 - 🧭 **Lifecycle state stream** – explicit initialize/pause/resume/dispose with state events.
 - 🔁 **AF/AE state events** – listen to focus/exposure lock/search/fail states.
-- ⚠️ **Structured errors** – `CameraLensSwitcherException` wraps native error codes/messages so your app can react consistently to permission or hardware failures.
+- ⚠️ **Structured errors** – `IrisCameraException` wraps native error codes/messages so your app can react consistently to permission or hardware failures.
 
 ---
 
