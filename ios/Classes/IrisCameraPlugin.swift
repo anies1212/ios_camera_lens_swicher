@@ -1,4 +1,5 @@
 import AVFoundation
+import Foundation
 import Flutter
 import UIKit
 
@@ -30,6 +31,7 @@ public class IrisCameraPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, AV
     let channel = FlutterMethodChannel(name: channelName, binaryMessenger: registrar.messenger())
     let instance = IrisCameraPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
+
     let previewFactory = CameraPreviewFactory(sessionProvider: { instance.captureSession })
     registrar.register(previewFactory, withId: "\(channelName)/preview")
 
@@ -280,7 +282,7 @@ public class IrisCameraPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, AV
     return false
   }
 
-  private func positionString(from position: AVCaptureDevice.Position) -> String {
+  func positionString(from position: AVCaptureDevice.Position) -> String {
     switch position {
     case .back:
       return "back"
@@ -293,7 +295,7 @@ public class IrisCameraPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, AV
     }
   }
 
-  private func categoryString(from deviceType: AVCaptureDevice.DeviceType, fallbackPosition: AVCaptureDevice.Position) -> String {
+  func categoryString(from deviceType: AVCaptureDevice.DeviceType, fallbackPosition: AVCaptureDevice.Position) -> String {
     switch deviceType {
     case .builtInWideAngleCamera:
       return "wide"
