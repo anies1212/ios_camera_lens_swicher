@@ -1,3 +1,14 @@
+## 1.0.3
+
+- Fixed workflow trigger  
+- Resolved iOS example lender flex error  
+- Improved Swift tests and implementation  
+- Added Swift Flutter stubs  
+- Implemented tests for Swift  
+- Updated README for clarity  
+- Removed unnecessary Swift test files  
+- Enhanced default camera features  
+
 ## 1.0.2
 
 - Improved code formatting
