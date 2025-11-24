@@ -2,12 +2,16 @@
 enum CameraLifecycleState {
   /// Session and channel initialized.
   initialized,
+
   /// Session running (preview/capture active).
   running,
+
   /// Session paused/stopped temporarily.
   paused,
+
   /// Session disposed and resources released.
   disposed,
+
   /// Error state reported by the platform.
   error,
 }
@@ -23,8 +27,10 @@ class CameraStateEvent {
 
   /// Reported lifecycle state.
   final CameraLifecycleState state;
+
   /// Optional error code when [state] is [CameraLifecycleState.error].
   final String? errorCode;
+
   /// Optional error message when [state] is [CameraLifecycleState.error].
   final String? errorMessage;
 

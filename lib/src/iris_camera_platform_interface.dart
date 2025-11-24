@@ -77,11 +77,13 @@ abstract class IrisCameraPlatform extends PlatformInterface {
   }
 
   Future<double> getMinExposureOffset() {
-    throw UnimplementedError('getMinExposureOffset() has not been implemented.');
+    throw UnimplementedError(
+        'getMinExposureOffset() has not been implemented.');
   }
 
   Future<double> getMaxExposureOffset() {
-    throw UnimplementedError('getMaxExposureOffset() has not been implemented.');
+    throw UnimplementedError(
+        'getMaxExposureOffset() has not been implemented.');
   }
 
   Future<double> setExposureOffset(double offset) {
@@ -93,7 +95,8 @@ abstract class IrisCameraPlatform extends PlatformInterface {
   }
 
   Future<double> getExposureOffsetStepSize() {
-    throw UnimplementedError('getExposureOffsetStepSize() has not been implemented.');
+    throw UnimplementedError(
+        'getExposureOffsetStepSize() has not been implemented.');
   }
 
   Future<void> setResolutionPreset(ResolutionPreset preset) {
@@ -139,7 +142,8 @@ abstract class IrisCameraPlatform extends PlatformInterface {
 
   /// Stream of AF/AE state updates.
   Stream<FocusExposureStateEvent> get focusExposureStateStream {
-    throw UnimplementedError('focusExposureStateStream has not been implemented.');
+    throw UnimplementedError(
+        'focusExposureStateStream has not been implemented.');
   }
 
   /// Stream of live image frames from the active camera (BGRA).

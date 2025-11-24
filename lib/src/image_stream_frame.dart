@@ -36,7 +36,10 @@ class IrisImageFrame {
     final height = map['height'];
     final bytesPerRow = map['bytesPerRow'];
     final format = map['format'];
-    if (width is! int || height is! int || bytesPerRow is! int || format is! String) {
+    if (width is! int ||
+        height is! int ||
+        bytesPerRow is! int ||
+        format is! String) {
       throw const FormatException('Invalid frame metadata');
     }
     return IrisImageFrame(

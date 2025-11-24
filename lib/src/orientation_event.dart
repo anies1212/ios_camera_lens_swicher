@@ -26,6 +26,7 @@ class OrientationEvent {
 
   /// Current device orientation.
   final DeviceOrientation deviceOrientation;
+
   /// Current video orientation for preview/capture.
   final VideoOrientation videoOrientation;
 

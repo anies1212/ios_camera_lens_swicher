@@ -18,13 +18,13 @@ class MethodChannelIrisCamera extends IrisCameraPlatform {
   @visibleForTesting
   final methodChannel = MethodChannel(IrisChannel.method.name);
   static final EventChannel _imageStreamChannel =
-  EventChannel(IrisChannel.imageStream.name);
+      EventChannel(IrisChannel.imageStream.name);
   static final EventChannel _orientationChannel =
-  EventChannel(IrisChannel.orientation.name);
+      EventChannel(IrisChannel.orientation.name);
   static final EventChannel _stateChannel =
-  EventChannel(IrisChannel.state.name);
+      EventChannel(IrisChannel.state.name);
   static final EventChannel _focusExposureStateChannel =
-  EventChannel(IrisChannel.focusExposureState.name);
+      EventChannel(IrisChannel.focusExposureState.name);
   Stream<IrisImageFrame>? _imageStream;
   Stream<OrientationEvent>? _orientationStream;
   Stream<CameraStateEvent>? _stateStream;
@@ -42,12 +42,11 @@ class MethodChannelIrisCamera extends IrisCameraPlatform {
   Future<List<CameraLensDescriptor>> listAvailableLenses({
     bool includeFrontCameras = true,
   }) async {
-    final rawList =
-        await methodChannel.invokeListMethod<Object?>(
+    final rawList = await methodChannel.invokeListMethod<Object?>(
           IrisMethod.listAvailableLenses.method,
           <String, dynamic>{IrisArgKey.includeFront.key: includeFrontCameras},
         ) ??
-            const <Object?>[];
+        const <Object?>[];
     return rawList
         .map(_coerceMap)
         .map(CameraLensDescriptor.fromMap)
@@ -115,7 +114,8 @@ class MethodChannelIrisCamera extends IrisCameraPlatform {
     if (tint != null) {
       args[IrisArgKey.tint.key] = tint;
     }
-    await methodChannel.invokeMethod<void>(IrisMethod.setWhiteBalance.method, args);
+    await methodChannel.invokeMethod<void>(
+        IrisMethod.setWhiteBalance.method, args);
   }
 
   @override
@@ -123,15 +123,18 @@ class MethodChannelIrisCamera extends IrisCameraPlatform {
     await methodChannel.invokeMethod<void>(
       IrisMethod.setExposureMode.method,
       <String, dynamic>{
-        IrisArgKey.mode.key: switch (mode) { ExposureMode.locked => 'locked', _ => 'auto' }
+        IrisArgKey.mode.key: switch (mode) {
+          ExposureMode.locked => 'locked',
+          _ => 'auto'
+        }
       },
     );
   }
 
   @override
   Future<ExposureMode> getExposureMode() async {
-    final mode =
-    await methodChannel.invokeMethod<String>(IrisMethod.getExposureMode.method);
+    final mode = await methodChannel
+        .invokeMethod<String>(IrisMethod.getExposureMode.method);
     return mode == 'locked' ? ExposureMode.locked : ExposureMode.auto;
   }
 
@@ -148,15 +151,15 @@ class MethodChannelIrisCamera extends IrisCameraPlatform {
 
   @override
   Future<double> getMinExposureOffset() async {
-    final value =
-    await methodChannel.invokeMethod<num>(IrisMethod.getMinExposureOffset.method);
+    final value = await methodChannel
+        .invokeMethod<num>(IrisMethod.getMinExposureOffset.method);
     return (value ?? 0).toDouble();
   }
 
   @override
   Future<double> getMaxExposureOffset() async {
-    final value =
-    await methodChannel.invokeMethod<num>(IrisMethod.getMaxExposureOffset.method);
+    final value = await methodChannel
+        .invokeMethod<num>(IrisMethod.getMaxExposureOffset.method);
     return (value ?? 0).toDouble();
   }
 
@@ -171,14 +174,15 @@ class MethodChannelIrisCamera extends IrisCameraPlatform {
 
   @override
   Future<double> getExposureOffset() async {
-    final value = await methodChannel.invokeMethod<num>(IrisMethod.getExposureOffset.method);
+    final value = await methodChannel
+        .invokeMethod<num>(IrisMethod.getExposureOffset.method);
     return (value ?? 0).toDouble();
   }
 
   @override
   Future<double> getExposureOffsetStepSize() async {
-    final value =
-    await methodChannel.invokeMethod<num>(IrisMethod.getExposureOffsetStepSize.method);
+    final value = await methodChannel
+        .invokeMethod<num>(IrisMethod.getExposureOffsetStepSize.method);
     return (value ?? 0.1).toDouble();
   }
 
@@ -191,29 +195,30 @@ class MethodChannelIrisCamera extends IrisCameraPlatform {
   }
 
   @override
-  Stream<IrisImageFrame> get imageStream =>
-      _imageStream ??= _imageStreamChannel.receiveBroadcastStream().map((event) {
+  Stream<IrisImageFrame> get imageStream => _imageStream ??=
+          _imageStreamChannel.receiveBroadcastStream().map((event) {
         final map = _coerceMap(event);
         return IrisImageFrame.fromMap(map);
       });
 
   @override
   Stream<OrientationEvent> get orientationStream => _orientationStream ??=
-      _orientationChannel.receiveBroadcastStream().map((event) {
+          _orientationChannel.receiveBroadcastStream().map((event) {
         final map = _coerceMap(event);
         return OrientationEvent.fromMap(map);
       });
 
   @override
-  Stream<CameraStateEvent> get stateStream => _stateStream ??=
-      _stateChannel.receiveBroadcastStream().map((event) {
+  Stream<CameraStateEvent> get stateStream =>
+      _stateStream ??= _stateChannel.receiveBroadcastStream().map((event) {
         final map = _coerceMap(event);
         return CameraStateEvent.fromMap(map);
       });
 
   @override
   Stream<FocusExposureStateEvent> get focusExposureStateStream =>
-      _focusExposureStateStream ??= _focusExposureStateChannel.receiveBroadcastStream().map((event) {
+      _focusExposureStateStream ??=
+          _focusExposureStateChannel.receiveBroadcastStream().map((event) {
         final map = _coerceMap(event);
         return FocusExposureStateEvent.fromMap(map);
       });
@@ -241,14 +246,18 @@ class MethodChannelIrisCamera extends IrisCameraPlatform {
     await methodChannel.invokeMethod<void>(
       IrisMethod.setFocusMode.method,
       <String, dynamic>{
-        IrisArgKey.mode.key: switch (mode) { FocusMode.locked => 'locked', _ => 'auto' }
+        IrisArgKey.mode.key: switch (mode) {
+          FocusMode.locked => 'locked',
+          _ => 'auto'
+        }
       },
     );
   }
 
   @override
   Future<FocusMode> getFocusMode() async {
-    final mode = await methodChannel.invokeMethod<String>(IrisMethod.getFocusMode.method);
+    final mode = await methodChannel
+        .invokeMethod<String>(IrisMethod.getFocusMode.method);
     return mode == 'locked' ? FocusMode.locked : FocusMode.auto;
   }
 

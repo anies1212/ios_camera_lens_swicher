@@ -38,7 +38,8 @@ class PhotoCaptureOptions {
       IrisArgKey.flashMode.key: flash,
     };
     if (exposureDuration != null) {
-      map[IrisArgKey.exposureDurationMicros.key] = exposureDuration!.inMicroseconds;
+      map[IrisArgKey.exposureDurationMicros.key] =
+          exposureDuration!.inMicroseconds;
     }
     if (iso != null) {
       map[IrisArgKey.iso.key] = iso;

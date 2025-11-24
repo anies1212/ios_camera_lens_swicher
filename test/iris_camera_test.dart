@@ -54,13 +54,15 @@ void main() {
   });
 }
 
-class _MockIrisCameraPlatform with MockPlatformInterfaceMixin
+class _MockIrisCameraPlatform
+    with MockPlatformInterfaceMixin
     implements IrisCameraPlatform {
   @override
   Future<String?> getPlatformVersion() => Future.value('42');
 
   @override
-  Future<List<CameraLensDescriptor>> listAvailableLenses({bool includeFrontCameras = true}) async {
+  Future<List<CameraLensDescriptor>> listAvailableLenses(
+      {bool includeFrontCameras = true}) async {
     return [
       CameraLensDescriptor(
         id: 'front_true_depth',
@@ -162,16 +164,19 @@ class _MockIrisCameraPlatform with MockPlatformInterfaceMixin
   Stream<CameraStateEvent> get stateStream => const Stream.empty();
 
   @override
-  Stream<FocusExposureStateEvent> get focusExposureStateStream => const Stream.empty();
+  Stream<FocusExposureStateEvent> get focusExposureStateStream =>
+      const Stream.empty();
 }
 
-class _ThrowingSwitchPlatform with MockPlatformInterfaceMixin
+class _ThrowingSwitchPlatform
+    with MockPlatformInterfaceMixin
     implements IrisCameraPlatform {
   @override
   Future<String?> getPlatformVersion() => Future.value('0');
 
   @override
-  Future<List<CameraLensDescriptor>> listAvailableLenses({bool includeFrontCameras = true}) async =>
+  Future<List<CameraLensDescriptor>> listAvailableLenses(
+          {bool includeFrontCameras = true}) async =>
       <CameraLensDescriptor>[];
 
   @override
@@ -263,5 +268,6 @@ class _ThrowingSwitchPlatform with MockPlatformInterfaceMixin
   Stream<CameraStateEvent> get stateStream => const Stream.empty();
 
   @override
-  Stream<FocusExposureStateEvent> get focusExposureStateStream => const Stream.empty();
+  Stream<FocusExposureStateEvent> get focusExposureStateStream =>
+      const Stream.empty();
 }

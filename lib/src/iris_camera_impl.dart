@@ -155,7 +155,8 @@ class IrisCamera {
   }
 
   /// Stream of live frames for image processing.
-  Stream<IrisImageFrame> get imageStream => IrisCameraPlatform.instance.imageStream;
+  Stream<IrisImageFrame> get imageStream =>
+      IrisCameraPlatform.instance.imageStream;
 
   /// Begins streaming frames over [imageStream].
   Future<void> startImageStream() {
