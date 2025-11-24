@@ -31,7 +31,7 @@ final class StateStreamHandler: NSObject, FlutterStreamHandler {
     ]
     if let error {
       payload["errorCode"] = error.code
-      payload["errorMessage"] = error.message ?? error.localizedDescription
+      payload["errorMessage"] = error.message ?? error.code
     }
     sink(payload)
   }
