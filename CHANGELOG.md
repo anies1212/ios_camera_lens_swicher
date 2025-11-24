@@ -1,3 +1,11 @@
+## 1.0.3
+
+- Fixed iOS example lender flex error.
+- Resolved issues with Swift tests and removed unnecessary test files.
+- Implemented Swift Flutter stubs and tests.
+- Updated README for clarity and corrected exceptions.
+- Added default camera features implementation.
+
 ## 1.0.2
 
 - Improved code formatting
