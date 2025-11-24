@@ -210,7 +210,7 @@ public class IrisCameraPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, AV
     return descriptorDictionary(for: device)
   }
 
-  private func listAvailableLenses(arguments: Any?) -> [[String: Any]] {
+  fileprivate func listAvailableLenses(arguments: Any?) -> [[String: Any]] {
     let payload = arguments as? [String: Any]
     let includeFront = payload?["includeFront"] as? Bool ?? true
     return devices().compactMap { device in
