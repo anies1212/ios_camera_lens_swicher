@@ -97,16 +97,16 @@ Widget:
 
 ---
 
-## iris_camera vs camera (iOS)
+## iris_camera vs camera (iOS/Android)
 
 | Capability | [iris_camera](https://pub.dev/packages/iris_camera) | [camera](https://pub.dev/packages/camera) |
 | --- | --- | --- |
 | Still photos | ✅ Shared session JPEG capture | ✅ |
-| Live preview widget | ✅ `IrisCameraPreview` (iOS) | ✅ |
+| Live preview widget | ✅ `IrisCameraPreview` (iOS/Android) | ✅ |
 | Lens discovery/switching | ✅ Enumerate + switch by category (wide/ultraWide/telephoto/etc.), front opt-in | ⚪️ List only (no switching API) |
-| Tap/manual focus | ✅ (point or lens position) | ✅ |
+| Tap/manual focus | ✅ Tap/point focus; iOS also supports lensPosition | ✅ |
 | Exposure controls | ✅ mode/point/EV/ISO/exposure duration | ✅ (mode/point/offset) |
-| White balance override | ✅ temperature/tint | ⚪️ (not exposed) |
+| White balance override | ✅ iOS: temperature/tint; Android: auto/lock only | ⚪️ (not exposed) |
 | Zoom | ✅ | ✅ |
 | Torch | ✅ (torch separate from flash) | ✅ |
 | Frame rate range | ✅ min/max FPS | ⚪️ limited |
