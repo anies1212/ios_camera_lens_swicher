@@ -2,14 +2,15 @@ name: auto-assign-author
 
 on:
   pull_request:
-    types: [opened, reopened]
+    types: [opened, reopened, ready_for_review]
+
+permissions:
+  issues: write
+  pull-requests: write
 
 jobs:
-  permissions:
-    issues: write
-    pull-requests: write
   assign-author:
     runs-on: ubuntu-latest
     steps:
       - name: Assign PR author
-        uses: toshimaru/auto-author-assign@16f0022cf3d7970c106d8d1105f75a1165edb516
+        uses: toshimaru/auto-author-assign@16f0022cf3d7970c106d8d1105f75a1165edb516 # v2.1.1
