@@ -1,5 +1,3 @@
-import 'dart:io' show Platform;
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
@@ -129,7 +127,7 @@ class MethodChannelIrisCamera extends IrisCameraPlatform {
     Offset? point,
     double? lensPosition,
   }) async {
-    if (Platform.isAndroid && lensPosition != null) {
+    if (defaultTargetPlatform == TargetPlatform.android && lensPosition != null) {
       throw PlatformException(
         code: 'unsupported_feature',
         message: 'lensPosition focus is not supported on Android.',
@@ -161,7 +159,7 @@ class MethodChannelIrisCamera extends IrisCameraPlatform {
     double? temperature,
     double? tint,
   }) async {
-    if (Platform.isAndroid && (temperature != null || tint != null)) {
+    if (defaultTargetPlatform == TargetPlatform.android && (temperature != null || tint != null)) {
       throw PlatformException(
         code: 'unsupported_feature',
         message:
@@ -435,10 +433,11 @@ class MethodChannelIrisCamera extends IrisCameraPlatform {
   }
 
   void _ensureSupported() {
-    if (!Platform.isIOS && !Platform.isAndroid) {
+    final platform = defaultTargetPlatform;
+    if (platform != TargetPlatform.iOS && platform != TargetPlatform.android) {
       throw PlatformException(
         code: 'unsupported_platform',
-        message: 'iris_camera is only supported on iOS and Android.',
+        message: 'MethodChannelIrisCamera is only supported on iOS and Android.',
       );
     }
   }

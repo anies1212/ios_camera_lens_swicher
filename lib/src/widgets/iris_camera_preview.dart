@@ -6,6 +6,8 @@ import 'package:flutter/rendering.dart' show PlatformViewHitTestBehavior;
 import 'package:flutter/services.dart' show PlatformViewCreatedCallback;
 
 import 'focus_indicator_controller.dart';
+import 'iris_camera_preview_stub.dart'
+    if (dart.library.js_interop) 'iris_camera_preview_web.dart' as web_preview;
 
 const String _kPreviewViewType = 'iris_camera/preview';
 
@@ -121,27 +123,35 @@ class _IrisCameraPreviewState extends State<IrisCameraPreview> {
   @override
   Widget build(BuildContext context) {
     Widget preview;
-    switch (defaultTargetPlatform) {
-      case TargetPlatform.iOS:
-        preview = UiKitView(
-          viewType: _kPreviewViewType,
-          hitTestBehavior: widget.hitTestBehavior,
-          onPlatformViewCreated: widget.onViewCreated,
-        );
-      case TargetPlatform.android:
-        preview = AndroidView(
-          viewType: _kPreviewViewType,
-          hitTestBehavior: widget.hitTestBehavior,
-          onPlatformViewCreated: widget.onViewCreated,
-        );
-      default:
-        preview = widget.placeholder ??
-            const Center(
-              child: Text(
-                'Camera preview is only available on iOS/Android devices.',
-                textAlign: TextAlign.center,
-              ),
-            );
+
+    if (kIsWeb) {
+      // Web platform uses HtmlElementView
+      preview = web_preview.buildWebPreview(
+        onViewCreated: widget.onViewCreated,
+      );
+    } else {
+      switch (defaultTargetPlatform) {
+        case TargetPlatform.iOS:
+          preview = UiKitView(
+            viewType: _kPreviewViewType,
+            hitTestBehavior: widget.hitTestBehavior,
+            onPlatformViewCreated: widget.onViewCreated,
+          );
+        case TargetPlatform.android:
+          preview = AndroidView(
+            viewType: _kPreviewViewType,
+            hitTestBehavior: widget.hitTestBehavior,
+            onPlatformViewCreated: widget.onViewCreated,
+          );
+        default:
+          preview = widget.placeholder ??
+              const Center(
+                child: Text(
+                  'Camera preview is only available on iOS/Android/Web.',
+                  textAlign: TextAlign.center,
+                ),
+              );
+      }
     }
 
     preview = DecoratedBox(

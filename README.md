@@ -1,8 +1,8 @@
 # iris_camera
 
-📸 iOS + Android camera toolkit for Flutter, powered by AVFoundation and CameraX. Render the native preview, switch lenses, stream frames, capture photos, **record video**, tune exposure/white balance/torch/zoom, and listen to lifecycle + orientation + AF/AE state – all from Dart.
+📸 iOS + Android + Web camera toolkit for Flutter, powered by AVFoundation, CameraX, and browser MediaDevices API. Render the native preview, switch lenses, stream frames, capture photos, **record video**, tune exposure/white balance/torch/zoom, and listen to lifecycle + orientation + AF/AE state – all from Dart.
 
-> Platform coverage: iOS + Android. Web backend planned for v2. Other platforms no-op safely.
+> Platform coverage: iOS + Android + Web. Other platforms no-op safely.
 
 ---
 
@@ -23,6 +23,7 @@
 ### Supported platforms
 - Android: minSdk **26**+, targetSdk 34 (CameraX 1.3.x)
 - iOS: iOS **15.0**+
+- Web: Modern browsers with MediaDevices API support (Chrome, Firefox, Safari, Edge)
 ```bash
 flutter pub add iris_camera
 ```
@@ -75,7 +76,16 @@ Add the camera permission to your app manifest (the plugin also declares it for 
 
 `iris_camera` will prompt for runtime permission automatically before accessing the camera. The preview is rendered via a native `PreviewView`, and tap-to-focus works the same as iOS.
 
---- 
+## Web setup
+No additional configuration required. The browser will automatically prompt for camera permission when accessing the camera. Ensure your site is served over HTTPS (required for camera access).
+
+**Note:** Some advanced features have limited support on web:
+- Focus/exposure point control is simulated (browser limitation)
+- White balance temperature/tint is not available
+- Video recording outputs WebM format (blob URL)
+- Torch/flash depends on browser and device support
+
+---
 
 ## API quick reference
 Key methods:
@@ -110,7 +120,7 @@ Widget:
 | Capability | [iris_camera](https://pub.dev/packages/iris_camera) | [camera](https://pub.dev/packages/camera) |
 | --- | --- | --- |
 | Still photos | ✅ Shared session JPEG capture | ✅ |
-| Live preview widget | ✅ `IrisCameraPreview` (iOS/Android) | ✅ |
+| Live preview widget | ✅ `IrisCameraPreview` (iOS/Android/Web) | ✅ |
 | Lens discovery/switching | ✅ Enumerate + switch by category (wide/ultraWide/telephoto/etc.), front opt-in | ⚪️ List only (no switching API) |
 | Tap/manual focus | ✅ Tap/point focus; iOS also supports lensPosition | ✅ |
 | Exposure controls | ✅ mode/point/EV/ISO/exposure duration | ✅ (mode/point/offset) |
@@ -123,8 +133,8 @@ Widget:
 | Orientation stream | ✅ device/video | ✅ |
 | AF/AE state stream | ✅ | ⚪️ basic focus/exposure mode only |
 | Lifecycle controls | ✅ initialize/pause/resume/dispose + state stream | ✅ (controller init/dispose) |
-| Video recording | ✅ (iOS/Android) | ✅ |
-| Web | ❌ (planned v2) | ✅ |
+| Video recording | ✅ (iOS/Android/Web) | ✅ |
+| Web | ✅ (MediaDevices API) | ✅ |
 
 ---
 
