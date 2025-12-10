@@ -1,3 +1,7 @@
+## 1.0.6
+
+- Added support for Web platform
+
 ## 1.0.5
 
 - Updated example Android minSdk to 26  
