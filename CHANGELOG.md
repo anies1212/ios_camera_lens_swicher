@@ -1,3 +1,7 @@
+## 1.0.7
+
+- Enhanced documentation with improved example for basic iris_camera usage.
+
 ## 1.0.6
 
 - Added support for Web platform

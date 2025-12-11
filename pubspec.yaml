@@ -1,6 +1,6 @@
 name: iris_camera
 description: "AVFoundation-powered camera toolkit with preview, lens control, and still capture APIs."
-version: 1.0.6
+version: 1.0.7
 repository: https://github.com/anies1212/iris_camera
 homepage: https://github.com/anies1212/iris_camera
 
